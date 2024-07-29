@@ -2,66 +2,50 @@ import pyspiel
 import numpy as np
 import mcts as MCTS
 from gui import GUI
-import random
-import time
-
-
-gui = GUI()
-gui.draw_lines()
-
-
-def print_board(state):
-    if not state.is_terminal():
-        gui.update_board(state.observation_tensor())
-        print(state.observation_tensor())
-        print("-------------")
-
-
-def get_human_action(state):
-    while True:
-        try:
-            legal_actions = state.legal_actions()
-            
-            action = ''
-            try:
-                action = random.choice(legal_actions)
-            except:
-                pass
-            
-            # int(input(f"Enter you move {str(legal_actions)} : "))
-            if action in legal_actions:
-                return action
-            else:
-                print("Invalid move, Try again")
-        except ValueError:
-            print("Should be numeric value")
-
+import pygame
+import sys
 
 def play_game(game, human_player):
     state = game.new_initial_state()
+    gui = GUI()
+
     while not state.is_terminal():
-        print_board(state)
+        gui.update_board(state.observation_tensor(), state.legal_actions())
         current_player = state.current_player()
+        
         if current_player == human_player:
-            action = get_human_action(state)
+            legal_actions = state.legal_actions()
+            action = None
+            while action not in legal_actions:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        clicked_pos = gui.get_clicked_position(event.pos)
+                        if clicked_pos in legal_actions:
+                            action = clicked_pos
         else:
             action = MCTS.select_action(state)
 
         state.apply_action(action)
 
-    print_board(state)
+    # Game over
+    gui.update_board(state.observation_tensor())
+    
     if state.returns()[human_player] > 0:
-        print("Human Wins!")
+        winner = human_player
     elif state.returns()[human_player] < 0:
-        print("AI Wins!")
+        winner = 1 - human_player
     else:
-        print("Draw")
-
+        winner = None
+    
+    gui.show_winner(winner)
 
 def main():
     game = pyspiel.load_game("othello")
-    human_player = 1
+    human_player = 1  # 1 for black, 0 for white
     play_game(game, human_player)
 
-
-main()
+if __name__ == "__main__":
+    main()
