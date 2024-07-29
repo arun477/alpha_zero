@@ -135,7 +135,7 @@
                 } else {
                     alert('GAME OVER');
                     document.location.reload();
-                    clearInterval(interval);
+                    
                 }  
             }
 
@@ -144,10 +144,12 @@
               } else if (leftPressed) {
                 paddleX = Math.max(paddleX - 7, 0);
             }
+
+            requestAnimationFrame(draw);
         }
 
         function startGame() {
-            interval = setInterval(draw, 10);
+            draw();
         }
 
         function keyDownHandler(e) {
@@ -178,7 +180,7 @@
                             if(score === brickColumnCount * brickRowCount){
                                 alert('YOU WIN!');
                                 document.location.reload();
-                                clearInterval(interval);
+                                
                             }
                         }
                     }
