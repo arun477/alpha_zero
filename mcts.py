@@ -100,15 +100,6 @@ def plot_score_grid(scores):
     for (i, j), val in np.ndenumerate(scores):
         ax.text(j, i, f"{val:.2f}", ha="center", va="center", color="black")
 
-    ax.set_xticks(np.arange(3))
-    ax.set_yticks(np.arange(3))
-
-    ax.set_xticklabels(["0", "1", "2"])
-    ax.set_yticklabels(["0", "1", "2"])
-
-    ax.set_xlabel("Column")
-    ax.set_ylabel("Row")
-
     plt.title("othello Move Scores")
     plt.show()
 
